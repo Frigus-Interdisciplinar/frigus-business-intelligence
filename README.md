@@ -87,7 +87,7 @@ Antes de gerar a base, o notebook confere que a origem não está vazia, que nã
 
 Todas as visualizações usam o mesmo dataset (`Transacoes Frigus`) e respondem aos dois filtros.
 
-![Dashboard Frigus - Transações e pagamentos](docs/dashboard-transacoes-pagamentos.png)
+A versão exportada do dashboard está em [`docs/dashboard-transacoes-pagamentos.pdf`](docs/dashboard-transacoes-pagamentos.pdf).
 
 ## KPIs de negócio
 
@@ -106,7 +106,26 @@ Este notebook usa os schemas `frigus.data_engineering_bronze`, `frigus.data_engi
 
 ## Job do Databricks
 
-O job executa os notebooks `00` a `03` em sequência, produzindo a base final do dashboard. A execução pode ser manual ou agendada. As evidências (configuração, histórico de execução, status e resultado gerado) estão em `docs/evidencias/`.
+O job **BI - Pipeline Dashboard Frigus** roda em compute serverless e tem duas tarefas encadeadas:
+
+| Tarefa | Notebook |
+|---|---|
+| `01_ingestao_tratamento` | `BI - 01 Ingestao e Tratamento` |
+| `02_base_final_kpis` | `BI - 02 Base Final e KPIs` |
+
+A segunda tarefa só roda se a primeira terminar com sucesso. Os notebooks `00` (preparação do ambiente) e `03` (documentação do dashboard) não fazem parte do job.
+
+A execução é manual, pelo botão **Run now**, sem agendamento. A execução registrada terminou com status `Succeeded` e produziu 7.768 transações na base final. As evidências (configuração, histórico de execução, status e resultado gerado) estão no [relatório gerencial](docs/relatorio-gerencial.pdf).
+
+## Vídeo de demonstração
+
+O vídeo mostra o processo de BI do Frigus no Databricks, em três partes:
+
+1. Configuração do pipeline, com as duas etapas: ingestão e tratamento dos dados, e geração da base final com o cálculo dos KPIs.
+2. Execução do job e as tabelas geradas.
+3. Dashboard de transações e pagamentos, com os indicadores, os gráficos e os filtros interativos que atualizam tudo conforme a seleção.
+
+[Assistir à demonstração do pipeline e do dashboard](https://drive.google.com/file/d/1WXP4TanvOyTe5_Z13qDQFGzY3yky_C-y/view?usp=sharing)
 
 ## Pastas
 
@@ -119,8 +138,7 @@ O job executa os notebooks `00` a `03` em sequência, produzindo a base final do
 │   ├── BI - 03 Preparacao Dashboard e Filtros.ipynb
 │   └── Business KPIs - Frigus.ipynb
 ├── docs/
-│   ├── dashboard-transacoes-pagamentos.png
-│   ├── evidencias/
+│   ├── dashboard-transacoes-pagamentos.pdf
 │   └── relatorio-gerencial.pdf
 ├── LICENSE
 └── README.md
@@ -131,7 +149,7 @@ O job executa os notebooks `00` a `03` em sequência, produzindo a base final do
 1. No Databricks, importe os notebooks de `notebooks/` para o workspace.
 2. Rode `BI - 00 Preparar Ambiente` para criar os schemas e o volume.
 3. Exporte as 10 tabelas do Supabase em CSV e envie os arquivos para o volume `/Volumes/workspace/frigus_arquivos/entrada`, com o nome `<tabela>.csv`.
-4. Execute o job, ou rode os notebooks `01`, `02` e `03` na ordem.
+4. Execute o job **BI - Pipeline Dashboard Frigus** com **Run now**, ou rode os notebooks `01` e `02` na ordem.
 5. Abra o dashboard e use os filtros de período e método de pagamento.
 
 ## Limites
